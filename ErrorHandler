@@ -1,0 +1,29 @@
+import logging
+import boto3
+import sys
+
+LOGGER = logging.getLogger()
+LOGGER.setLevel(logging.INFO)
+LOG_GROUP_NAME = None
+LOG_STREAM_NAME = None
+
+
+def error_handler(error, fail=True):
+    try:
+        LOGGER.error('The following error has occurred on line: %s')
+        LOGGER.error(str(error))
+        sess = boto3.session.Session()
+        region = sess.region_name
+
+        message = "https://{0}.console.aws.amazon.com/cloudwatch/home?region={0}#logEventViewer:group={1};stream={2}".format(
+            region, LOG_GROUP_NAME, LOG_STREAM_NAME)
+
+        if fail:
+            sys.exit(1)
+
+    except Exception as err:
+        LOGGER.error(
+            'The following error has occurred on line: %s',
+            sys.exc_info()[2].tb_lineno)
+        LOGGER.error(str(err))
+        sys.exit(1)
