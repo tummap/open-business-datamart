@@ -2,11 +2,11 @@ import logging
 import boto3
 import sys
 
+
 LOGGER = logging.getLogger()
 LOGGER.setLevel(logging.INFO)
 LOG_GROUP_NAME = None
 LOG_STREAM_NAME = None
-
 
 def error_handler(error, fail=True):
     try:
@@ -27,3 +27,6 @@ def error_handler(error, fail=True):
             sys.exc_info()[2].tb_lineno)
         LOGGER.error(str(err))
         sys.exit(1)
+
+
+
