@@ -17,7 +17,7 @@ def error_handler(error, fail=True):
 
         message = "https://{0}.console.aws.amazon.com/cloudwatch/home?region={0}#logEventViewer:group={1};stream={2}".format(
             region, LOG_GROUP_NAME, LOG_STREAM_NAME)
-
+        LOGGER.error(message)
         if fail:
             sys.exit(1)
 
