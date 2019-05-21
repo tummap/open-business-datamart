@@ -88,7 +88,7 @@ def fetch_datasources_list():
     #print(config_list)
 
 
-def read_datasource(item):
+def read_datasource_parquet(item):
     #print(config_list)
     print(f'Reading data from data source {config_list[item].get("Name")}')
     name = config_list[item].get("Name")
@@ -122,6 +122,39 @@ def read_datasource(item):
             #pq.write_to_dataset(table=name, root_path=output_file, filesystem=aws_s3_fs)
 
 
+
+def read_datasource(item):
+    #print(config_list)
+    print(f'Reading data from data source {config_list[item].get("Name")}')
+    name = config_list[item].get("Name")
+    print('Type is {} and Location {}'.format(config_list[item].get("Type"), config_list[item].get("location")))
+
+    if(config_list[item].get("Type").lower() == 'csv'):
+        """r = requests.get(config_list[item].get("location"), stream=True)
+        linecount = 0
+        for line in r.iter_lines():
+            if line:
+                if linecount == 0:
+                    print ('Header - Columns : ', line)
+                else:
+                    print(line)
+                linecount += 1
+        print('Number of rows {}'.format(linecount))
+        """
+        dataframe = pandas.read_csv(config_list[item].get("location"), sep=',', quotechar='"', encoding='utf8')
+        #dataframe.to_parquet(config_list[item].get("Name"), engine='auto', compression='snappy')
+        #table = pyarrow.Table.from_pandas(dataframe)
+        output_file = f"s3://{DESTINATION_BUCKET_NAME}/{name}.csv"
+        try:
+            aws_s3_fs.ls(DESTINATION_BUCKET_NAME)
+        except:
+            #s3.create_bucket(Bucket=DESTINATION_BUCKET_NAME, CreateBucketConfiguration=dict(LocationConstraint='eu-west-2'))
+            aws_s3_fs.mkdir(DESTINATION_BUCKET_NAME)
+            print('Created Bucket')
+        else:
+            dataframe.to_csv(output_file)
+            print('Bucket exists and file created', output_file)
+            #pq.write_to_dataset(table=name, root_path=output_file, filesystem=aws_s3_fs)
 
 
 def read_datasources():
