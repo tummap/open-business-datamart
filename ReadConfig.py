@@ -21,7 +21,7 @@ LOG_GROUP_NAME = None
 LOG_STREAM_NAME = None
 
 CONFIG_BUCKET_NAME = 'open-business-datamart'
-DESTINATION_BUCKET_NAME = 'open-business-datamart'
+DESTINATION_BUCKET_NAME = 'gluedatadiscovery-raws3bucket-ocucokzux6nx'
 
 def error_handler(error, fail=True):
     try:
