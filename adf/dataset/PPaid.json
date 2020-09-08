@@ -1,11 +1,16 @@
 {
 	"name": "PPaid",
 	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LandRegistry",
+			"type": "LinkedServiceReference"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "HttpServerLocation"
+				"type": "HttpServerLocation",
+				"relativeUrl": "pp-2020.csv"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
