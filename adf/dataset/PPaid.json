@@ -14,9 +14,74 @@
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
-			"firstRowAsHeader": true,
+			"firstRowAsHeader": false,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "{A2479555-7EE0-74C7-E053-6B04A8C0887D}",
+				"type": "String"
+			},
+			{
+				"name": "126000",
+				"type": "String"
+			},
+			{
+				"name": "2020-02-14 00:00",
+				"type": "String"
+			},
+			{
+				"name": "NN4 9DE",
+				"type": "String"
+			},
+			{
+				"name": "S",
+				"type": "String"
+			},
+			{
+				"name": "N",
+				"type": "String"
+			},
+			{
+				"name": "L",
+				"type": "String"
+			},
+			{
+				"name": "6",
+				"type": "String"
+			},
+			{
+				"name": "Prop_8",
+				"type": "String"
+			},
+			{
+				"name": "TILLER WAY",
+				"type": "String"
+			},
+			{
+				"name": "Prop_10",
+				"type": "String"
+			},
+			{
+				"name": "NORTHAMPTON11",
+				"type": "String"
+			},
+			{
+				"name": "NORTHAMPTON12",
+				"type": "String"
+			},
+			{
+				"name": "NORTHAMPTONSHIRE",
+				"type": "String"
+			},
+			{
+				"name": "A14",
+				"type": "String"
+			},
+			{
+				"name": "A15",
+				"type": "String"
+			}
+		]
 	}
 }
