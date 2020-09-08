@@ -1,0 +1,12 @@
+{
+	"name": "ExploreS3",
+	"properties": {
+		"globalParameters": {
+			"prefix": {
+				"type": "string",
+				"value": "pp_"
+			}
+		}
+	},
+	"location": "uksouth"
+}
