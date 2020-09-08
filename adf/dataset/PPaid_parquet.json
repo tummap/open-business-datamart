@@ -1,0 +1,20 @@
+{
+	"name": "PPaid_parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "Input",
+				"container": "pricepaiddata"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
