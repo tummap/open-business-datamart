@@ -6,9 +6,15 @@
 			"type": "LinkedServiceReference",
 			"parameters": {
 				"baseURL": {
-					"value": "{@pipeline().globalParameters.baseLandRegistryURL}",
+					"value": "dataset().dataseturl",
 					"type": "Expression"
 				}
+			}
+		},
+		"parameters": {
+			"dataseturl": {
+				"type": "string",
+				"defaultValue": "http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/"
 			}
 		},
 		"annotations": [],
