@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "Copy PP Data from Land Registry",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -33,6 +33,13 @@
 					},
 					"enableStaging": false,
 					"enableSkipIncompatibleRow": true,
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "Logging",
+							"type": "LinkedServiceReference"
+						},
+						"path": "pricepaiddata"
+					},
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
@@ -43,7 +50,7 @@
 									"ordinal": 1
 								},
 								"sink": {
-									"name": "Transaction unique identifier\t"
+									"name": "TransactionUniqueIdentifier"
 								}
 							},
 							{
@@ -63,7 +70,7 @@
 									"ordinal": 3
 								},
 								"sink": {
-									"name": "Date of Transfer"
+									"name": "DateofTransfer"
 								}
 							},
 							{
@@ -83,7 +90,7 @@
 									"ordinal": 5
 								},
 								"sink": {
-									"name": "Property Type"
+									"name": "PropertyType"
 								}
 							},
 							{
@@ -93,7 +100,7 @@
 									"ordinal": 6
 								},
 								"sink": {
-									"name": "Old/New\t"
+									"name": "OldNew"
 								}
 							},
 							{
@@ -153,7 +160,7 @@
 									"ordinal": 12
 								},
 								"sink": {
-									"name": "Town/City\t"
+									"name": "TownCity"
 								}
 							},
 							{
@@ -183,7 +190,7 @@
 									"ordinal": 15
 								},
 								"sink": {
-									"name": "PPD Category Type"
+									"name": "PPDCategoryType"
 								}
 							},
 							{
@@ -193,7 +200,7 @@
 									"ordinal": 16
 								},
 								"sink": {
-									"name": "Record Status - monthly file only"
+									"name": "RecordStatusMonthly"
 								}
 							}
 						],
