@@ -274,6 +274,14 @@
 						}
 					},
 					"enableStaging": false,
+					"enableSkipIncompatibleRow": true,
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "Logging",
+							"type": "LinkedServiceReference"
+						},
+						"path": "companyhousedata"
+					},
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
