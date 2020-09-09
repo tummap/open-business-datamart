@@ -1,5 +1,5 @@
 {
-	"name": "PricePaidData",
+	"name": "InputPipelineData",
 	"properties": {
 		"activities": [
 			{
