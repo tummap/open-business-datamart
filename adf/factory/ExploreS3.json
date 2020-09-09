@@ -5,6 +5,10 @@
 			"prefix": {
 				"type": "string",
 				"value": "pp_"
+			},
+			"baseURL": {
+				"type": "string",
+				"value": "http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/"
 			}
 		}
 	},
