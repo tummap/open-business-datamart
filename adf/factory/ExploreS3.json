@@ -6,7 +6,7 @@
 				"type": "string",
 				"value": "pp_"
 			},
-			"baseURL": {
+			"baseLandRegistryURL": {
 				"type": "string",
 				"value": "http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/"
 			}
