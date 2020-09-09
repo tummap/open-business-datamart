@@ -15,22 +15,231 @@
 				"type": "HttpServerLocation"
 			},
 			"columnDelimiter": ",",
-			"compressionCodec": "gzip",
+			"compressionCodec": "ZipDeflate",
 			"compressionLevel": "Optimal",
 			"escapeChar": "\\",
+			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
 		"schema": [
 			{
+				"name": "CompanyName",
 				"type": "String"
 			},
 			{
+				"name": " CompanyNumber",
 				"type": "String"
 			},
 			{
+				"name": "RegAddress.CareOf",
 				"type": "String"
 			},
 			{
+				"name": "RegAddress.POBox",
+				"type": "String"
+			},
+			{
+				"name": "RegAddress.AddressLine1",
+				"type": "String"
+			},
+			{
+				"name": " RegAddress.AddressLine2",
+				"type": "String"
+			},
+			{
+				"name": "RegAddress.PostTown",
+				"type": "String"
+			},
+			{
+				"name": "RegAddress.County",
+				"type": "String"
+			},
+			{
+				"name": "RegAddress.Country",
+				"type": "String"
+			},
+			{
+				"name": "RegAddress.PostCode",
+				"type": "String"
+			},
+			{
+				"name": "CompanyCategory",
+				"type": "String"
+			},
+			{
+				"name": "CompanyStatus",
+				"type": "String"
+			},
+			{
+				"name": "CountryOfOrigin",
+				"type": "String"
+			},
+			{
+				"name": "DissolutionDate",
+				"type": "String"
+			},
+			{
+				"name": "IncorporationDate",
+				"type": "String"
+			},
+			{
+				"name": "Accounts.AccountRefDay",
+				"type": "String"
+			},
+			{
+				"name": "Accounts.AccountRefMonth",
+				"type": "String"
+			},
+			{
+				"name": "Accounts.NextDueDate",
+				"type": "String"
+			},
+			{
+				"name": "Accounts.LastMadeUpDate",
+				"type": "String"
+			},
+			{
+				"name": "Accounts.AccountCategory",
+				"type": "String"
+			},
+			{
+				"name": "Returns.NextDueDate",
+				"type": "String"
+			},
+			{
+				"name": "Returns.LastMadeUpDate",
+				"type": "String"
+			},
+			{
+				"name": "Mortgages.NumMortCharges",
+				"type": "String"
+			},
+			{
+				"name": "Mortgages.NumMortOutstanding",
+				"type": "String"
+			},
+			{
+				"name": "Mortgages.NumMortPartSatisfied",
+				"type": "String"
+			},
+			{
+				"name": "Mortgages.NumMortSatisfied",
+				"type": "String"
+			},
+			{
+				"name": "SICCode.SicText_1",
+				"type": "String"
+			},
+			{
+				"name": "SICCode.SicText_2",
+				"type": "String"
+			},
+			{
+				"name": "SICCode.SicText_3",
+				"type": "String"
+			},
+			{
+				"name": "SICCode.SicText_4",
+				"type": "String"
+			},
+			{
+				"name": "LimitedPartnerships.NumGenPartners",
+				"type": "String"
+			},
+			{
+				"name": "LimitedPartnerships.NumLimPartners",
+				"type": "String"
+			},
+			{
+				"name": "URI",
+				"type": "String"
+			},
+			{
+				"name": "PreviousName_1.CONDATE",
+				"type": "String"
+			},
+			{
+				"name": " PreviousName_1.CompanyName",
+				"type": "String"
+			},
+			{
+				"name": " PreviousName_2.CONDATE",
+				"type": "String"
+			},
+			{
+				"name": " PreviousName_2.CompanyName",
+				"type": "String"
+			},
+			{
+				"name": "PreviousName_3.CONDATE",
+				"type": "String"
+			},
+			{
+				"name": " PreviousName_3.CompanyName",
+				"type": "String"
+			},
+			{
+				"name": "PreviousName_4.CONDATE",
+				"type": "String"
+			},
+			{
+				"name": " PreviousName_4.CompanyName",
+				"type": "String"
+			},
+			{
+				"name": "PreviousName_5.CONDATE",
+				"type": "String"
+			},
+			{
+				"name": " PreviousName_5.CompanyName",
+				"type": "String"
+			},
+			{
+				"name": "PreviousName_6.CONDATE",
+				"type": "String"
+			},
+			{
+				"name": " PreviousName_6.CompanyName",
+				"type": "String"
+			},
+			{
+				"name": "PreviousName_7.CONDATE",
+				"type": "String"
+			},
+			{
+				"name": " PreviousName_7.CompanyName",
+				"type": "String"
+			},
+			{
+				"name": "PreviousName_8.CONDATE",
+				"type": "String"
+			},
+			{
+				"name": " PreviousName_8.CompanyName",
+				"type": "String"
+			},
+			{
+				"name": "PreviousName_9.CONDATE",
+				"type": "String"
+			},
+			{
+				"name": " PreviousName_9.CompanyName",
+				"type": "String"
+			},
+			{
+				"name": "PreviousName_10.CONDATE",
+				"type": "String"
+			},
+			{
+				"name": " PreviousName_10.CompanyName",
+				"type": "String"
+			},
+			{
+				"name": "ConfStmtNextDueDate",
+				"type": "String"
+			},
+			{
+				"name": " ConfStmtLastMadeUpDate",
 				"type": "String"
 			}
 		]

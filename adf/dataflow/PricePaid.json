@@ -17,6 +17,9 @@
 						"type": "DatasetReference"
 					},
 					"name": "ReadCompanyData"
+				},
+				{
+					"name": "source1"
 				}
 			],
 			"sinks": [],
@@ -25,7 +28,7 @@
 					"name": "Join1"
 				}
 			],
-			"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet') ~> ReadPPData\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> ReadCompanyData\nReadPPData, ReadCompanyData join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1"
+			"script": "source(output(\n\t\tTransactionUniqueIdentifier as string,\n\t\tPrice as string,\n\t\tDateofTransfer as string,\n\t\tPostcode as string,\n\t\tPropertyType as string,\n\t\tOldNew as string,\n\t\tDuration as string,\n\t\tPAON as string,\n\t\tSOAN as string,\n\t\tStreet as string,\n\t\tLocality as string,\n\t\tTownCity as string,\n\t\tDistrict as string,\n\t\tCounty as string,\n\t\tPPDCategoryType as string,\n\t\tRecordStatusMonthly as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet') ~> ReadPPData\nsource(output(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string,\n\t\tColumn_4 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> ReadCompanyData\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> source1\nReadPPData, ReadCompanyData join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1"
 		}
 	}
 }
