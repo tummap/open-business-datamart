@@ -3,7 +3,13 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LandRegistry",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"baseURL": {
+					"value": "{@pipeline().globalParameters.baseLandRegistryURL}",
+					"type": "Expression"
+				}
+			}
 		},
 		"annotations": [],
 		"type": "DelimitedText",
