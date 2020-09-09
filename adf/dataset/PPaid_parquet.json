@@ -15,6 +15,71 @@
 			},
 			"compressionCodec": "snappy"
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "TransactionUniqueIdentifier",
+				"type": "UTF8"
+			},
+			{
+				"name": "Price",
+				"type": "UTF8"
+			},
+			{
+				"name": "DateofTransfer",
+				"type": "UTF8"
+			},
+			{
+				"name": "Postcode",
+				"type": "UTF8"
+			},
+			{
+				"name": "PropertyType",
+				"type": "UTF8"
+			},
+			{
+				"name": "OldNew",
+				"type": "UTF8"
+			},
+			{
+				"name": "Duration",
+				"type": "UTF8"
+			},
+			{
+				"name": "PAON",
+				"type": "UTF8"
+			},
+			{
+				"name": "SOAN",
+				"type": "UTF8"
+			},
+			{
+				"name": "Street",
+				"type": "UTF8"
+			},
+			{
+				"name": "Locality",
+				"type": "UTF8"
+			},
+			{
+				"name": "TownCity",
+				"type": "UTF8"
+			},
+			{
+				"name": "District",
+				"type": "UTF8"
+			},
+			{
+				"name": "County",
+				"type": "UTF8"
+			},
+			{
+				"name": "PPDCategoryType",
+				"type": "UTF8"
+			},
+			{
+				"name": "RecordStatusMonthly",
+				"type": "UTF8"
+			}
+		]
 	}
 }

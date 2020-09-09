@@ -3,7 +3,10 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "CompanyHouse",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"url": "http://download.companieshouse.gov.uk/BasicCompanyDataAsOneFile-2020-09-01.zip"
+			}
 		},
 		"annotations": [],
 		"type": "DelimitedText",
@@ -12,6 +15,8 @@
 				"type": "HttpServerLocation"
 			},
 			"columnDelimiter": ",",
+			"compressionCodec": "gzip",
+			"compressionLevel": "Optimal",
 			"escapeChar": "\\",
 			"quoteChar": "\""
 		},

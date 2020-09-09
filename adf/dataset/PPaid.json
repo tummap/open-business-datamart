@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference",
 			"parameters": {
 				"baseURL": {
-					"value": "dataset().dataseturl",
+					"value": "@dataset().dataseturl",
 					"type": "Expression"
 				}
 			}
