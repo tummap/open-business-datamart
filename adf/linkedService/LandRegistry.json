@@ -11,7 +11,7 @@
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
-			"url": "@{pipeline().globalParameters.baseLandRegistryURL}",
+			"url": "@{linkedService().baseURL}",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
