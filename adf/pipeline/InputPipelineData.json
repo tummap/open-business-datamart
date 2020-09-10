@@ -3,909 +3,967 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy PP Data from Land Registry",
-				"type": "Copy",
+				"name": "Extract PricePaid Data",
+				"type": "IfCondition",
 				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "HttpReadSettings",
-							"requestMethod": "GET"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
+					"expression": {
+						"value": "@pipeline().globalParameters.ExtractPricePaidData",
+						"type": "Expression"
 					},
-					"sink": {
-						"type": "ParquetSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
+					"ifTrueActivities": [
+						{
+							"name": "Copy PP Data from Land Registry_copy1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "ParquetSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"enableSkipIncompatibleRow": true,
+								"logStorageSettings": {
+									"linkedServiceName": {
+										"referenceName": "Logging",
+										"type": "LinkedServiceReference"
+									},
+									"path": "pricepaiddata"
+								},
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 1
+											},
+											"sink": {
+												"name": "TransactionUniqueIdentifier"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 2
+											},
+											"sink": {
+												"name": "Price"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 3
+											},
+											"sink": {
+												"name": "DateofTransfer"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 4
+											},
+											"sink": {
+												"name": "Postcode"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 5
+											},
+											"sink": {
+												"name": "PropertyType"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 6
+											},
+											"sink": {
+												"name": "OldNew"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 7
+											},
+											"sink": {
+												"name": "Duration"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 8
+											},
+											"sink": {
+												"name": "PAON"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 9
+											},
+											"sink": {
+												"name": "SOAN"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 10
+											},
+											"sink": {
+												"name": "Street"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 11
+											},
+											"sink": {
+												"name": "Locality"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 12
+											},
+											"sink": {
+												"name": "TownCity"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 13
+											},
+											"sink": {
+												"name": "District"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 14
+											},
+											"sink": {
+												"name": "County"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 15
+											},
+											"sink": {
+												"name": "PPDCategoryType"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 16
+											},
+											"sink": {
+												"name": "RecordStatusMonthly"
+											}
+										}
+									],
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "PPaid",
+									"type": "DatasetReference",
+									"parameters": {
+										"dataseturl": {
+											"value": "@pipeline().globalParameters.baseLandRegistryURL",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "PPaid_parquet",
+									"type": "DatasetReference"
+								}
+							]
 						}
-					},
-					"enableStaging": false,
-					"enableSkipIncompatibleRow": true,
-					"logStorageSettings": {
-						"linkedServiceName": {
-							"referenceName": "Logging",
-							"type": "LinkedServiceReference"
-						},
-						"path": "pricepaiddata"
-					},
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 1
-								},
-								"sink": {
-									"name": "TransactionUniqueIdentifier"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 2
-								},
-								"sink": {
-									"name": "Price"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 3
-								},
-								"sink": {
-									"name": "DateofTransfer"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 4
-								},
-								"sink": {
-									"name": "Postcode"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 5
-								},
-								"sink": {
-									"name": "PropertyType"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 6
-								},
-								"sink": {
-									"name": "OldNew"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 7
-								},
-								"sink": {
-									"name": "Duration"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 8
-								},
-								"sink": {
-									"name": "PAON"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 9
-								},
-								"sink": {
-									"name": "SOAN"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 10
-								},
-								"sink": {
-									"name": "Street"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 11
-								},
-								"sink": {
-									"name": "Locality"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 12
-								},
-								"sink": {
-									"name": "TownCity"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 13
-								},
-								"sink": {
-									"name": "District"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 14
-								},
-								"sink": {
-									"name": "County"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 15
-								},
-								"sink": {
-									"name": "PPDCategoryType"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"physicalType": "String",
-									"ordinal": 16
-								},
-								"sink": {
-									"name": "RecordStatusMonthly"
-								}
-							}
-						],
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "PPaid",
-						"type": "DatasetReference",
-						"parameters": {
-							"dataseturl": {
-								"value": "@pipeline().globalParameters.baseLandRegistryURL",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "PPaid_parquet",
-						"type": "DatasetReference"
-					}
-				]
+					]
+				}
 			},
 			{
-				"name": "Copy data from Company House",
-				"type": "Copy",
+				"name": "Extract Company Data",
+				"type": "IfCondition",
 				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"additionalColumns": [
-							{
-								"name": "Filename",
-								"value": "$$FILEPATH"
-							}
-						],
-						"storeSettings": {
-							"type": "HttpReadSettings",
-							"requestMethod": "GET"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings",
-							"compressionProperties": {
-								"type": "ZipDeflateReadSettings"
+					"expression": {
+						"value": "@pipeline().globalParameters.ExtractCompanyData",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Copy data from Company House",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"additionalColumns": [
+										{
+											"name": "Filename",
+											"value": "$$FILEPATH"
+										}
+									],
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings",
+										"compressionProperties": {
+											"type": "ZipDeflateReadSettings"
+										}
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"enableSkipIncompatibleRow": true,
+								"logStorageSettings": {
+									"linkedServiceName": {
+										"referenceName": "Logging",
+										"type": "LinkedServiceReference"
+									},
+									"path": "companyhousedata"
+								},
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "CompanyName",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "CompanyName",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": " CompanyNumber",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "CompanyNumber"
+											}
+										},
+										{
+											"source": {
+												"name": "RegAddress.CareOf",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "RegAddress.CareOf",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "RegAddress.POBox",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "RegAddress.POBox",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "RegAddress.AddressLine1",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "RegAddress.AddressLine1",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": " RegAddress.AddressLine2",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "RegAddress.AddressLine2"
+											}
+										},
+										{
+											"source": {
+												"name": "RegAddress.PostTown",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "RegAddress.PostTown",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "RegAddress.County",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "RegAddress.County",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "RegAddress.Country",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "RegAddress.Country",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "RegAddress.PostCode",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "RegAddress.PostCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "CompanyCategory",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "CompanyCategory",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "CompanyStatus",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "CompanyStatus",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "CountryOfOrigin",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "CountryOfOrigin",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "DissolutionDate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "DissolutionDate",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "IncorporationDate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "IncorporationDate",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Accounts.AccountRefDay",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Accounts.AccountRefDay",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Accounts.AccountRefMonth",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Accounts.AccountRefMonth",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Accounts.NextDueDate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Accounts.NextDueDate",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Accounts.LastMadeUpDate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Accounts.LastMadeUpDate",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Accounts.AccountCategory",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Accounts.AccountCategory",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Returns.NextDueDate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Returns.NextDueDate",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Returns.LastMadeUpDate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Returns.LastMadeUpDate",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Mortgages.NumMortCharges",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Mortgages.NumMortCharges",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Mortgages.NumMortOutstanding",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Mortgages.NumMortOutstanding",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Mortgages.NumMortPartSatisfied",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Mortgages.NumMortPartSatisfied",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Mortgages.NumMortSatisfied",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Mortgages.NumMortSatisfied",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "SICCode.SicText_1",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "SICCode.SicText_1",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "SICCode.SicText_2",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "SICCode.SicText_2",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "SICCode.SicText_3",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "SICCode.SicText_3",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "SICCode.SicText_4",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "SICCode.SicText_4",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "LimitedPartnerships.NumGenPartners",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "LimitedPartnerships.NumGenPartners",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "LimitedPartnerships.NumLimPartners",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "LimitedPartnerships.NumLimPartners",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "URI",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "URI",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "PreviousName_1.CONDATE",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_1.CONDATE",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": " PreviousName_1.CompanyName",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_1.CompanyName"
+											}
+										},
+										{
+											"source": {
+												"name": " PreviousName_2.CONDATE",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_2.CONDATE"
+											}
+										},
+										{
+											"source": {
+												"name": " PreviousName_2.CompanyName",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_2.CompanyName"
+											}
+										},
+										{
+											"source": {
+												"name": "PreviousName_3.CONDATE",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_3.CONDATE",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": " PreviousName_3.CompanyName",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_3.CompanyName"
+											}
+										},
+										{
+											"source": {
+												"name": "PreviousName_4.CONDATE",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_4.CONDATE",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": " PreviousName_4.CompanyName",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_4.CompanyName"
+											}
+										},
+										{
+											"source": {
+												"name": "PreviousName_5.CONDATE",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_5.CONDATE",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": " PreviousName_5.CompanyName",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_5.CompanyName"
+											}
+										},
+										{
+											"source": {
+												"name": "PreviousName_6.CONDATE",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_6.CONDATE",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": " PreviousName_6.CompanyName",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_6.CompanyName"
+											}
+										},
+										{
+											"source": {
+												"name": "PreviousName_7.CONDATE",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_7.CONDATE",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": " PreviousName_7.CompanyName",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_7.CompanyName"
+											}
+										},
+										{
+											"source": {
+												"name": "PreviousName_8.CONDATE",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_8.CONDATE",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": " PreviousName_8.CompanyName",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_8.CompanyName"
+											}
+										},
+										{
+											"source": {
+												"name": "PreviousName_9.CONDATE",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_9.CONDATE",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": " PreviousName_9.CompanyName",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_9.CompanyName"
+											}
+										},
+										{
+											"source": {
+												"name": "PreviousName_10.CONDATE",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_10.CONDATE",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": " PreviousName_10.CompanyName",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "PreviousName_10.CompanyName"
+											}
+										},
+										{
+											"source": {
+												"name": "ConfStmtNextDueDate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "ConfStmtNextDueDate",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": " ConfStmtLastMadeUpDate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "ConfStmtLastMadeUpDate"
+											}
+										},
+										{
+											"source": {
+												"name": "Filename",
+												"type": "String"
+											},
+											"sink": {
+												"name": "Filename",
+												"type": "String"
+											}
+										}
+									],
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "CompanyData",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "CompanyDataBlob",
+									"type": "DatasetReference"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Extract Geo Data",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@pipeline().globalParameters.ExtractGeoData",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"enableStaging": false
 							}
 						}
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false,
-					"enableSkipIncompatibleRow": true,
-					"logStorageSettings": {
-						"linkedServiceName": {
-							"referenceName": "Logging",
-							"type": "LinkedServiceReference"
-						},
-						"path": "companyhousedata"
-					},
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"name": "CompanyName",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "CompanyName",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": " CompanyNumber",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "CompanyNumber"
-								}
-							},
-							{
-								"source": {
-									"name": "RegAddress.CareOf",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "RegAddress.CareOf",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "RegAddress.POBox",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "RegAddress.POBox",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "RegAddress.AddressLine1",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "RegAddress.AddressLine1",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": " RegAddress.AddressLine2",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "RegAddress.AddressLine2"
-								}
-							},
-							{
-								"source": {
-									"name": "RegAddress.PostTown",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "RegAddress.PostTown",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "RegAddress.County",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "RegAddress.County",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "RegAddress.Country",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "RegAddress.Country",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "RegAddress.PostCode",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "RegAddress.PostCode",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "CompanyCategory",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "CompanyCategory",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "CompanyStatus",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "CompanyStatus",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "CountryOfOrigin",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "CountryOfOrigin",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "DissolutionDate",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "DissolutionDate",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "IncorporationDate",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "IncorporationDate",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "Accounts.AccountRefDay",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Accounts.AccountRefDay",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "Accounts.AccountRefMonth",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Accounts.AccountRefMonth",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "Accounts.NextDueDate",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Accounts.NextDueDate",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "Accounts.LastMadeUpDate",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Accounts.LastMadeUpDate",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "Accounts.AccountCategory",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Accounts.AccountCategory",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "Returns.NextDueDate",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Returns.NextDueDate",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "Returns.LastMadeUpDate",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Returns.LastMadeUpDate",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "Mortgages.NumMortCharges",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Mortgages.NumMortCharges",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "Mortgages.NumMortOutstanding",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Mortgages.NumMortOutstanding",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "Mortgages.NumMortPartSatisfied",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Mortgages.NumMortPartSatisfied",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "Mortgages.NumMortSatisfied",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Mortgages.NumMortSatisfied",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "SICCode.SicText_1",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "SICCode.SicText_1",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "SICCode.SicText_2",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "SICCode.SicText_2",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "SICCode.SicText_3",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "SICCode.SicText_3",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "SICCode.SicText_4",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "SICCode.SicText_4",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "LimitedPartnerships.NumGenPartners",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "LimitedPartnerships.NumGenPartners",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "LimitedPartnerships.NumLimPartners",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "LimitedPartnerships.NumLimPartners",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "URI",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "URI",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "PreviousName_1.CONDATE",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_1.CONDATE",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": " PreviousName_1.CompanyName",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_1.CompanyName"
-								}
-							},
-							{
-								"source": {
-									"name": " PreviousName_2.CONDATE",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_2.CONDATE"
-								}
-							},
-							{
-								"source": {
-									"name": " PreviousName_2.CompanyName",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_2.CompanyName"
-								}
-							},
-							{
-								"source": {
-									"name": "PreviousName_3.CONDATE",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_3.CONDATE",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": " PreviousName_3.CompanyName",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_3.CompanyName"
-								}
-							},
-							{
-								"source": {
-									"name": "PreviousName_4.CONDATE",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_4.CONDATE",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": " PreviousName_4.CompanyName",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_4.CompanyName"
-								}
-							},
-							{
-								"source": {
-									"name": "PreviousName_5.CONDATE",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_5.CONDATE",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": " PreviousName_5.CompanyName",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_5.CompanyName"
-								}
-							},
-							{
-								"source": {
-									"name": "PreviousName_6.CONDATE",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_6.CONDATE",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": " PreviousName_6.CompanyName",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_6.CompanyName"
-								}
-							},
-							{
-								"source": {
-									"name": "PreviousName_7.CONDATE",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_7.CONDATE",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": " PreviousName_7.CompanyName",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_7.CompanyName"
-								}
-							},
-							{
-								"source": {
-									"name": "PreviousName_8.CONDATE",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_8.CONDATE",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": " PreviousName_8.CompanyName",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_8.CompanyName"
-								}
-							},
-							{
-								"source": {
-									"name": "PreviousName_9.CONDATE",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_9.CONDATE",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": " PreviousName_9.CompanyName",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_9.CompanyName"
-								}
-							},
-							{
-								"source": {
-									"name": "PreviousName_10.CONDATE",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_10.CONDATE",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": " PreviousName_10.CompanyName",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "PreviousName_10.CompanyName"
-								}
-							},
-							{
-								"source": {
-									"name": "ConfStmtNextDueDate",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "ConfStmtNextDueDate",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": " ConfStmtLastMadeUpDate",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "ConfStmtLastMadeUpDate"
-								}
-							},
-							{
-								"source": {
-									"name": "Filename",
-									"type": "String"
-								},
-								"sink": {
-									"name": "Filename",
-									"type": "String"
-								}
-							}
-						],
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "CompanyData",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "CompanyDataBlob",
-						"type": "DatasetReference"
-					}
-				]
+					]
+				}
 			}
 		],
 		"annotations": []
