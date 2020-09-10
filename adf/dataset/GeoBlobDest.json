@@ -1,9 +1,12 @@
 {
-	"name": "DelimitedText1",
+	"name": "GeoBlobDest",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureBlobStorage1",
 			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Dest"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
@@ -13,7 +16,10 @@
 				"container": "geodata"
 			},
 			"columnDelimiter": ",",
+			"compressionCodec": "ZipDeflate",
+			"compressionLevel": "Optimal",
 			"escapeChar": "\\",
+			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
 		"schema": []
