@@ -909,6 +909,30 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/GeoFull')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "geodata"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/InputPipelineData')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1985,6 +2009,40 @@
 				"[concat(variables('factoryId'), '/datasets/PPaid_parquet')]",
 				"[concat(variables('factoryId'), '/datasets/CompanyDataBlob')]",
 				"[concat(variables('factoryId'), '/datasets/CompanyandPropertyData')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GeoFlow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "GeoBlobDest",
+								"type": "DatasetReference"
+							},
+							"name": "GeoData"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "GeoFull",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'https://bigrpdiag.blob.core.windows.net/geodata/output/Doc/Code-Point_Open_Column_Headers.csv',\n\twildcardPaths:['output/Data/CSV/']) ~> GeoData\nGeoData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/GeoBlobDest')]",
+				"[concat(variables('factoryId'), '/datasets/GeoFull')]"
 			]
 		},
 		{

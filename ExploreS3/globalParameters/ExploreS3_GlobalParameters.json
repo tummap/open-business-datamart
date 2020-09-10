@@ -21,6 +21,6 @@
 	},
 	"ExtractGeoData": {
 		"type": "bool",
-		"value": true
+		"value": false
 	}
 }
