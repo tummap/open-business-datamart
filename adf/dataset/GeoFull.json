@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "processed",
+				"fileName": "processed",
 				"container": "geodata"
 			},
 			"compressionCodec": "snappy"
