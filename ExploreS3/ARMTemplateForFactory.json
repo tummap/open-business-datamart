@@ -1015,7 +1015,8 @@
 											"formatSettings": {
 												"type": "DelimitedTextReadSettings",
 												"compressionProperties": {
-													"type": "ZipDeflateReadSettings"
+													"type": "ZipDeflateReadSettings",
+													"preserveZipFileNameAsFolder": false
 												}
 											}
 										},
@@ -1668,7 +1669,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"folderPath": "doc",
+						"folderPath": "output",
 						"container": "geodata"
 					},
 					"columnDelimiter": "\u0001",
