@@ -3,18 +3,10 @@
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [
-				{
-					"dataset": {
-						"referenceName": "GeoBlobDest",
-						"type": "DatasetReference"
-					},
-					"name": "GeoPostcodes"
-				}
-			],
+			"sources": [],
 			"sinks": [],
 			"transformations": [],
-			"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> GeoPostcodes"
+			"script": ""
 		}
 	}
 }
