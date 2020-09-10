@@ -1,0 +1,28 @@
+{
+	"name": "GeoFlow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "GeoBlobDest",
+						"type": "DatasetReference"
+					},
+					"name": "GeoData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "GeoFull",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'https://bigrpdiag.blob.core.windows.net/geodata/output/Doc/Code-Point_Open_Column_Headers.csv',\n\twildcardPaths:['output/Data/CSV/']) ~> GeoData\nGeoData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}
