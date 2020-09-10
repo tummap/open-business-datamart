@@ -17,6 +17,10 @@
 			"ExtractPricePaidData": {
 				"type": "bool",
 				"value": false
+			},
+			"ExtractCompanyData": {
+				"type": "bool",
+				"value": false
 			}
 		}
 	},
