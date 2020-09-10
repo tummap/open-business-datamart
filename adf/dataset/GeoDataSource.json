@@ -5,42 +5,22 @@
 			"referenceName": "OrdinanceGeoData",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "Source"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "HttpServerLocation"
 			},
-			"columnDelimiter": ",",
+			"columnDelimiter": "\u0001",
+			"compressionCodec": "ZipDeflate",
+			"compressionLevel": "Optimal",
 			"escapeChar": "\\",
-			"firstRowAsHeader": true,
+			"firstRowAsHeader": false,
 			"quoteChar": "\""
 		},
-		"schema": [
-			{
-				"name": "[{\"md5\":\"40DFE8F6CEF10FFE3DB41791D6B85050\"",
-				"type": "String"
-			},
-			{
-				"name": "\"size\":16770298",
-				"type": "String"
-			},
-			{
-				"name": "\"url\":\"https://api.os.uk/downloads/v1/products/CodePointOpen/downloads?area=GB&format=CSV&redirect\"",
-				"type": "String"
-			},
-			{
-				"name": "\"format\":\"CSV\"",
-				"type": "String"
-			},
-			{
-				"name": "\"area\":\"GB\"",
-				"type": "String"
-			},
-			{
-				"name": "\"fileName\":\"codepo_gb.zip\"}]",
-				"type": "String"
-			}
-		]
+		"schema": []
 	}
 }
