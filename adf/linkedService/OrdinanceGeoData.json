@@ -1,0 +1,12 @@
+{
+	"name": "OrdinanceGeoData",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://api.os.uk/downloads/v1/products/CodePointOpen/downloads?area=GB&format=CSV",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
