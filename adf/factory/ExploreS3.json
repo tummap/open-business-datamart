@@ -13,6 +13,10 @@
 			"CompanyData": {
 				"type": "string",
 				"value": "http://download.companieshouse.gov.uk/BasicCompanyDataAsOneFile-2020-09-01.zip"
+			},
+			"ExtractPricePaidData": {
+				"type": "bool",
+				"value": false
 			}
 		}
 	},
