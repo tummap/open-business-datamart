@@ -1,0 +1,20 @@
+{
+	"name": "PostCodeAggregate",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "GeoBlobDest",
+						"type": "DatasetReference"
+					},
+					"name": "GeoPostcodes"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> GeoPostcodes"
+		}
+	}
+}

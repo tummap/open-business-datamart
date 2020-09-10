@@ -13,11 +13,12 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"folderPath": "doc",
 				"container": "geodata"
 			},
-			"columnDelimiter": ",",
+			"columnDelimiter": "\u0001",
 			"escapeChar": "\\",
-			"firstRowAsHeader": true,
+			"firstRowAsHeader": false,
 			"quoteChar": "\""
 		},
 		"schema": []

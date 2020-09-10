@@ -16,7 +16,7 @@
 			},
 			"columnDelimiter": "\u0001",
 			"compressionCodec": "ZipDeflate",
-			"compressionLevel": "Optimal",
+			"compressionLevel": "Fastest",
 			"escapeChar": "\\",
 			"firstRowAsHeader": false,
 			"quoteChar": "\""
