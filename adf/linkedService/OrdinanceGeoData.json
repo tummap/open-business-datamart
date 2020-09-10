@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
-			"url": "https://api.os.uk/downloads/v1/products/CodePointOpen/downloads?area=GB&format=CSV",
+			"url": "https://api.os.uk/downloads/v1/products/CodePointOpen/downloads?area=GB&format=CSV&redirect",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
