@@ -21,6 +21,10 @@
 			"ExtractCompanyData": {
 				"type": "bool",
 				"value": false
+			},
+			"ExtractGeoData": {
+				"type": "bool",
+				"value": true
 			}
 		}
 	},
