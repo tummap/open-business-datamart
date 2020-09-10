@@ -1,0 +1,2033 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ExploreS3"
+		},
+		"AmazonS31_secretAccessKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'secretAccessKey' of 'AmazonS31'"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
+		"Logging_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Logging'"
+		},
+		"AmazonS31_properties_typeProperties_accessKeyId": {
+			"type": "string",
+			"defaultValue": "AKIAWIHSUUK6SH6PMQMA"
+		},
+		"CompanyHouse_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{linkedService().url}"
+		},
+		"LandRegistry_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{linkedService().baseURL}"
+		},
+		"OrdinanceGeoData_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.os.uk/downloads/v1/products/CodePointOpen/downloads?area=GB&format=CSV&redirect"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AmazonS31')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AmazonS3",
+				"typeProperties": {
+					"serviceUrl": "https://s3-pt-opendb-archive.s3.eu-west-2.amazonaws.com",
+					"accessKeyId": "[parameters('AmazonS31_properties_typeProperties_accessKeyId')]",
+					"secretAccessKey": {
+						"type": "SecureString",
+						"value": "[parameters('AmazonS31_secretAccessKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CompanyHouse')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"url": {
+						"type": "string",
+						"defaultValue": "http://download.companieshouse.gov.uk/BasicCompanyDataAsOneFile-2020-09-01.zip"
+					}
+				},
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('CompanyHouse_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LandRegistry')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2020.csv",
+				"parameters": {
+					"baseURL": {
+						"type": "String",
+						"defaultValue": "http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/"
+					}
+				},
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('LandRegistry_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Logging')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('Logging_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/OrdinanceGeoData')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('OrdinanceGeoData_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
+			"apiVersion": "2018-06-01",
+			"properties": {},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CompanyData')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "CompanyHouse",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"url": "http://download.companieshouse.gov.uk/BasicCompanyDataAsOneFile-2020-09-01.zip"
+					}
+				},
+				"folder": {
+					"name": "Source"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation"
+					},
+					"columnDelimiter": ",",
+					"compressionCodec": "ZipDeflate",
+					"compressionLevel": "Optimal",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CompanyName",
+						"type": "String"
+					},
+					{
+						"name": " CompanyNumber",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.CareOf",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.POBox",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.AddressLine1",
+						"type": "String"
+					},
+					{
+						"name": " RegAddress.AddressLine2",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.PostTown",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.County",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.Country",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.PostCode",
+						"type": "String"
+					},
+					{
+						"name": "CompanyCategory",
+						"type": "String"
+					},
+					{
+						"name": "CompanyStatus",
+						"type": "String"
+					},
+					{
+						"name": "CountryOfOrigin",
+						"type": "String"
+					},
+					{
+						"name": "DissolutionDate",
+						"type": "String"
+					},
+					{
+						"name": "IncorporationDate",
+						"type": "String"
+					},
+					{
+						"name": "Accounts.AccountRefDay",
+						"type": "String"
+					},
+					{
+						"name": "Accounts.AccountRefMonth",
+						"type": "String"
+					},
+					{
+						"name": "Accounts.NextDueDate",
+						"type": "String"
+					},
+					{
+						"name": "Accounts.LastMadeUpDate",
+						"type": "String"
+					},
+					{
+						"name": "Accounts.AccountCategory",
+						"type": "String"
+					},
+					{
+						"name": "Returns.NextDueDate",
+						"type": "String"
+					},
+					{
+						"name": "Returns.LastMadeUpDate",
+						"type": "String"
+					},
+					{
+						"name": "Mortgages.NumMortCharges",
+						"type": "String"
+					},
+					{
+						"name": "Mortgages.NumMortOutstanding",
+						"type": "String"
+					},
+					{
+						"name": "Mortgages.NumMortPartSatisfied",
+						"type": "String"
+					},
+					{
+						"name": "Mortgages.NumMortSatisfied",
+						"type": "String"
+					},
+					{
+						"name": "SICCode.SicText_1",
+						"type": "String"
+					},
+					{
+						"name": "SICCode.SicText_2",
+						"type": "String"
+					},
+					{
+						"name": "SICCode.SicText_3",
+						"type": "String"
+					},
+					{
+						"name": "SICCode.SicText_4",
+						"type": "String"
+					},
+					{
+						"name": "LimitedPartnerships.NumGenPartners",
+						"type": "String"
+					},
+					{
+						"name": "LimitedPartnerships.NumLimPartners",
+						"type": "String"
+					},
+					{
+						"name": "URI",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_1.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": " PreviousName_1.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": " PreviousName_2.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": " PreviousName_2.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_3.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": " PreviousName_3.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_4.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": " PreviousName_4.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_5.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": " PreviousName_5.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_6.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": " PreviousName_6.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_7.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": " PreviousName_7.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_8.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": " PreviousName_8.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_9.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": " PreviousName_9.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_10.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": " PreviousName_10.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "ConfStmtNextDueDate",
+						"type": "String"
+					},
+					{
+						"name": " ConfStmtLastMadeUpDate",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/CompanyHouse')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CompanyDataBlob')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dest"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "BasicCompanyDataAsOneFile-2020-09-01.txt",
+						"folderPath": "d22b2449-3e38-454b-b4aa-4508c34c836e",
+						"container": "companyhousedata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "CompanyNumber",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.CareOf",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.POBox",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.AddressLine1",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.AddressLine2",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.PostTown",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.County",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.Country",
+						"type": "String"
+					},
+					{
+						"name": "RegAddress.PostCode",
+						"type": "String"
+					},
+					{
+						"name": "CompanyCategory",
+						"type": "String"
+					},
+					{
+						"name": "CompanyStatus",
+						"type": "String"
+					},
+					{
+						"name": "CountryOfOrigin",
+						"type": "String"
+					},
+					{
+						"name": "DissolutionDate",
+						"type": "String"
+					},
+					{
+						"name": "IncorporationDate",
+						"type": "String"
+					},
+					{
+						"name": "Accounts.AccountRefDay",
+						"type": "String"
+					},
+					{
+						"name": "Accounts.AccountRefMonth",
+						"type": "String"
+					},
+					{
+						"name": "Accounts.NextDueDate",
+						"type": "String"
+					},
+					{
+						"name": "Accounts.LastMadeUpDate",
+						"type": "String"
+					},
+					{
+						"name": "Accounts.AccountCategory",
+						"type": "String"
+					},
+					{
+						"name": "Returns.NextDueDate",
+						"type": "String"
+					},
+					{
+						"name": "Returns.LastMadeUpDate",
+						"type": "String"
+					},
+					{
+						"name": "Mortgages.NumMortCharges",
+						"type": "String"
+					},
+					{
+						"name": "Mortgages.NumMortOutstanding",
+						"type": "String"
+					},
+					{
+						"name": "Mortgages.NumMortPartSatisfied",
+						"type": "String"
+					},
+					{
+						"name": "Mortgages.NumMortSatisfied",
+						"type": "String"
+					},
+					{
+						"name": "SICCode.SicText_1",
+						"type": "String"
+					},
+					{
+						"name": "SICCode.SicText_2",
+						"type": "String"
+					},
+					{
+						"name": "SICCode.SicText_3",
+						"type": "String"
+					},
+					{
+						"name": "SICCode.SicText_4",
+						"type": "String"
+					},
+					{
+						"name": "LimitedPartnerships.NumGenPartners",
+						"type": "String"
+					},
+					{
+						"name": "LimitedPartnerships.NumLimPartners",
+						"type": "String"
+					},
+					{
+						"name": "URI",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_1.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_1.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_2.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_2.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_3.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_3.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_4.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_4.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_5.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_5.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_6.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_6.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_7.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_7.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_8.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_8.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_9.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_9.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_10.CONDATE",
+						"type": "String"
+					},
+					{
+						"name": "PreviousName_10.CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "ConfStmtNextDueDate",
+						"type": "String"
+					},
+					{
+						"name": "ConfStmtLastMadeUpDate",
+						"type": "String"
+					},
+					{
+						"name": "Filename",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CompanyandPropertyData')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "output"
+					},
+					"compressionCodec": "none"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GeoBlobDest')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dest"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "doc",
+						"container": "geodata"
+					},
+					"columnDelimiter": "\u0001",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GeoDataSource')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OrdinanceGeoData",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Source"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation"
+					},
+					"columnDelimiter": "\u0001",
+					"compressionCodec": "ZipDeflate",
+					"compressionLevel": "Fastest",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OrdinanceGeoData')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GeoZipFile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dest"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "data",
+						"container": "geodata"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PPaid')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LandRegistry",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"baseURL": {
+							"value": "@dataset().dataseturl",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"dataseturl": {
+						"type": "string",
+						"defaultValue": "http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/"
+					}
+				},
+				"folder": {
+					"name": "Source"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "pp-2020.csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LandRegistry')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PPaid_parquet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dest"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "Input",
+						"container": "pricepaiddata"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "TransactionUniqueIdentifier",
+						"type": "UTF8"
+					},
+					{
+						"name": "Price",
+						"type": "UTF8"
+					},
+					{
+						"name": "DateofTransfer",
+						"type": "UTF8"
+					},
+					{
+						"name": "Postcode",
+						"type": "UTF8"
+					},
+					{
+						"name": "PropertyType",
+						"type": "UTF8"
+					},
+					{
+						"name": "OldNew",
+						"type": "UTF8"
+					},
+					{
+						"name": "Duration",
+						"type": "UTF8"
+					},
+					{
+						"name": "PAON",
+						"type": "UTF8"
+					},
+					{
+						"name": "SOAN",
+						"type": "UTF8"
+					},
+					{
+						"name": "Street",
+						"type": "UTF8"
+					},
+					{
+						"name": "Locality",
+						"type": "UTF8"
+					},
+					{
+						"name": "TownCity",
+						"type": "UTF8"
+					},
+					{
+						"name": "District",
+						"type": "UTF8"
+					},
+					{
+						"name": "County",
+						"type": "UTF8"
+					},
+					{
+						"name": "PPDCategoryType",
+						"type": "UTF8"
+					},
+					{
+						"name": "RecordStatusMonthly",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/InputPipelineData')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Extract PricePaid Data",
+						"type": "IfCondition",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@pipeline().globalParameters.ExtractPricePaidData",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Copy PP Data from Land Registry_copy1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "ParquetSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false,
+										"enableSkipIncompatibleRow": true,
+										"logStorageSettings": {
+											"linkedServiceName": {
+												"referenceName": "Logging",
+												"type": "LinkedServiceReference"
+											},
+											"path": "pricepaiddata"
+										},
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 1
+													},
+													"sink": {
+														"name": "TransactionUniqueIdentifier"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 2
+													},
+													"sink": {
+														"name": "Price"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 3
+													},
+													"sink": {
+														"name": "DateofTransfer"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 4
+													},
+													"sink": {
+														"name": "Postcode"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 5
+													},
+													"sink": {
+														"name": "PropertyType"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 6
+													},
+													"sink": {
+														"name": "OldNew"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 7
+													},
+													"sink": {
+														"name": "Duration"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 8
+													},
+													"sink": {
+														"name": "PAON"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 9
+													},
+													"sink": {
+														"name": "SOAN"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 10
+													},
+													"sink": {
+														"name": "Street"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 11
+													},
+													"sink": {
+														"name": "Locality"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 12
+													},
+													"sink": {
+														"name": "TownCity"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 13
+													},
+													"sink": {
+														"name": "District"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 14
+													},
+													"sink": {
+														"name": "County"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 15
+													},
+													"sink": {
+														"name": "PPDCategoryType"
+													}
+												},
+												{
+													"source": {
+														"type": "String",
+														"physicalType": "String",
+														"ordinal": 16
+													},
+													"sink": {
+														"name": "RecordStatusMonthly"
+													}
+												}
+											],
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "PPaid",
+											"type": "DatasetReference",
+											"parameters": {
+												"dataseturl": {
+													"value": "@pipeline().globalParameters.baseLandRegistryURL",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "PPaid_parquet",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					},
+					{
+						"name": "Extract Company Data",
+						"type": "IfCondition",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@pipeline().globalParameters.ExtractCompanyData",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Copy data from Company House",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"additionalColumns": [
+												{
+													"name": "Filename",
+													"value": "$$FILEPATH"
+												}
+											],
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings",
+												"compressionProperties": {
+													"type": "ZipDeflateReadSettings"
+												}
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"enableSkipIncompatibleRow": true,
+										"logStorageSettings": {
+											"linkedServiceName": {
+												"referenceName": "Logging",
+												"type": "LinkedServiceReference"
+											},
+											"path": "companyhousedata"
+										},
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"name": "CompanyName",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "CompanyName",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": " CompanyNumber",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "CompanyNumber"
+													}
+												},
+												{
+													"source": {
+														"name": "RegAddress.CareOf",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "RegAddress.CareOf",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "RegAddress.POBox",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "RegAddress.POBox",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "RegAddress.AddressLine1",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "RegAddress.AddressLine1",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": " RegAddress.AddressLine2",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "RegAddress.AddressLine2"
+													}
+												},
+												{
+													"source": {
+														"name": "RegAddress.PostTown",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "RegAddress.PostTown",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "RegAddress.County",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "RegAddress.County",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "RegAddress.Country",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "RegAddress.Country",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "RegAddress.PostCode",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "RegAddress.PostCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "CompanyCategory",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "CompanyCategory",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "CompanyStatus",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "CompanyStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "CountryOfOrigin",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "CountryOfOrigin",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "DissolutionDate",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "DissolutionDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "IncorporationDate",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "IncorporationDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Accounts.AccountRefDay",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Accounts.AccountRefDay",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Accounts.AccountRefMonth",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Accounts.AccountRefMonth",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Accounts.NextDueDate",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Accounts.NextDueDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Accounts.LastMadeUpDate",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Accounts.LastMadeUpDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Accounts.AccountCategory",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Accounts.AccountCategory",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Returns.NextDueDate",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Returns.NextDueDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Returns.LastMadeUpDate",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Returns.LastMadeUpDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Mortgages.NumMortCharges",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Mortgages.NumMortCharges",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Mortgages.NumMortOutstanding",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Mortgages.NumMortOutstanding",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Mortgages.NumMortPartSatisfied",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Mortgages.NumMortPartSatisfied",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Mortgages.NumMortSatisfied",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Mortgages.NumMortSatisfied",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "SICCode.SicText_1",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "SICCode.SicText_1",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "SICCode.SicText_2",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "SICCode.SicText_2",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "SICCode.SicText_3",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "SICCode.SicText_3",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "SICCode.SicText_4",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "SICCode.SicText_4",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "LimitedPartnerships.NumGenPartners",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "LimitedPartnerships.NumGenPartners",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "LimitedPartnerships.NumLimPartners",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "LimitedPartnerships.NumLimPartners",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "URI",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "URI",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "PreviousName_1.CONDATE",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_1.CONDATE",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": " PreviousName_1.CompanyName",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_1.CompanyName"
+													}
+												},
+												{
+													"source": {
+														"name": " PreviousName_2.CONDATE",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_2.CONDATE"
+													}
+												},
+												{
+													"source": {
+														"name": " PreviousName_2.CompanyName",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_2.CompanyName"
+													}
+												},
+												{
+													"source": {
+														"name": "PreviousName_3.CONDATE",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_3.CONDATE",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": " PreviousName_3.CompanyName",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_3.CompanyName"
+													}
+												},
+												{
+													"source": {
+														"name": "PreviousName_4.CONDATE",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_4.CONDATE",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": " PreviousName_4.CompanyName",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_4.CompanyName"
+													}
+												},
+												{
+													"source": {
+														"name": "PreviousName_5.CONDATE",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_5.CONDATE",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": " PreviousName_5.CompanyName",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_5.CompanyName"
+													}
+												},
+												{
+													"source": {
+														"name": "PreviousName_6.CONDATE",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_6.CONDATE",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": " PreviousName_6.CompanyName",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_6.CompanyName"
+													}
+												},
+												{
+													"source": {
+														"name": "PreviousName_7.CONDATE",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_7.CONDATE",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": " PreviousName_7.CompanyName",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_7.CompanyName"
+													}
+												},
+												{
+													"source": {
+														"name": "PreviousName_8.CONDATE",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_8.CONDATE",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": " PreviousName_8.CompanyName",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_8.CompanyName"
+													}
+												},
+												{
+													"source": {
+														"name": "PreviousName_9.CONDATE",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_9.CONDATE",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": " PreviousName_9.CompanyName",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_9.CompanyName"
+													}
+												},
+												{
+													"source": {
+														"name": "PreviousName_10.CONDATE",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_10.CONDATE",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": " PreviousName_10.CompanyName",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "PreviousName_10.CompanyName"
+													}
+												},
+												{
+													"source": {
+														"name": "ConfStmtNextDueDate",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "ConfStmtNextDueDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"name": " ConfStmtLastMadeUpDate",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "ConfStmtLastMadeUpDate"
+													}
+												},
+												{
+													"source": {
+														"name": "Filename",
+														"type": "String"
+													},
+													"sink": {
+														"name": "Filename",
+														"type": "String"
+													}
+												}
+											],
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "CompanyData",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "CompanyDataBlob",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					},
+					{
+						"name": "Extract Geo Data",
+						"type": "IfCondition",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@pipeline().globalParameters.ExtractGeoData",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Geo Data",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings",
+												"compressionProperties": {
+													"type": "ZipDeflateReadSettings"
+												}
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings",
+												"copyBehavior": "PreserveHierarchy"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "GeoDataSource",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "GeoBlobDest",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/PPaid')]",
+				"[concat(variables('factoryId'), '/datasets/PPaid_parquet')]",
+				"[concat(variables('factoryId'), '/datasets/CompanyData')]",
+				"[concat(variables('factoryId'), '/datasets/CompanyDataBlob')]",
+				"[concat(variables('factoryId'), '/datasets/GeoDataSource')]",
+				"[concat(variables('factoryId'), '/datasets/GeoBlobDest')]",
+				"[concat(variables('factoryId'), '/linkedServices/Logging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PricePaid')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "PPaid_parquet",
+								"type": "DatasetReference"
+							},
+							"name": "ReadPPData"
+						},
+						{
+							"dataset": {
+								"referenceName": "CompanyDataBlob",
+								"type": "DatasetReference"
+							},
+							"name": "ReadCompanyData"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "CompanyandPropertyData",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Join1"
+						}
+					],
+					"script": "source(output(\n\t\tTransactionUniqueIdentifier as string,\n\t\tPrice as string,\n\t\tDateofTransfer as string,\n\t\tPostcode as string,\n\t\tPropertyType as string,\n\t\tOldNew as string,\n\t\tDuration as string,\n\t\tPAON as string,\n\t\tSOAN as string,\n\t\tStreet as string,\n\t\tLocality as string,\n\t\tTownCity as string,\n\t\tDistrict as string,\n\t\tCounty as string,\n\t\tPPDCategoryType as string,\n\t\tRecordStatusMonthly as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet') ~> ReadPPData\nsource(output(\n\t\tCompanyName as string,\n\t\tCompanyNumber as string,\n\t\t{RegAddress.CareOf} as string,\n\t\t{RegAddress.POBox} as string,\n\t\t{RegAddress.AddressLine1} as string,\n\t\t{RegAddress.AddressLine2} as string,\n\t\t{RegAddress.PostTown} as string,\n\t\t{RegAddress.County} as string,\n\t\t{RegAddress.Country} as string,\n\t\t{RegAddress.PostCode} as string,\n\t\tCompanyCategory as string,\n\t\tCompanyStatus as string,\n\t\tCountryOfOrigin as string,\n\t\tDissolutionDate as string,\n\t\tIncorporationDate as string,\n\t\t{Accounts.AccountRefDay} as string,\n\t\t{Accounts.AccountRefMonth} as string,\n\t\t{Accounts.NextDueDate} as string,\n\t\t{Accounts.LastMadeUpDate} as string,\n\t\t{Accounts.AccountCategory} as string,\n\t\t{Returns.NextDueDate} as string,\n\t\t{Returns.LastMadeUpDate} as string,\n\t\t{Mortgages.NumMortCharges} as string,\n\t\t{Mortgages.NumMortOutstanding} as string,\n\t\t{Mortgages.NumMortPartSatisfied} as string,\n\t\t{Mortgages.NumMortSatisfied} as string,\n\t\t{SICCode.SicText_1} as string,\n\t\t{SICCode.SicText_2} as string,\n\t\t{SICCode.SicText_3} as string,\n\t\t{SICCode.SicText_4} as string,\n\t\t{LimitedPartnerships.NumGenPartners} as string,\n\t\t{LimitedPartnerships.NumLimPartners} as string,\n\t\tURI as string,\n\t\t{PreviousName_1.CONDATE} as string,\n\t\t{PreviousName_1.CompanyName} as string,\n\t\t{PreviousName_2.CONDATE} as string,\n\t\t{PreviousName_2.CompanyName} as string,\n\t\t{PreviousName_3.CONDATE} as string,\n\t\t{PreviousName_3.CompanyName} as string,\n\t\t{PreviousName_4.CONDATE} as string,\n\t\t{PreviousName_4.CompanyName} as string,\n\t\t{PreviousName_5.CONDATE} as string,\n\t\t{PreviousName_5.CompanyName} as string,\n\t\t{PreviousName_6.CONDATE} as string,\n\t\t{PreviousName_6.CompanyName} as string,\n\t\t{PreviousName_7.CONDATE} as string,\n\t\t{PreviousName_7.CompanyName} as string,\n\t\t{PreviousName_8.CONDATE} as string,\n\t\t{PreviousName_8.CompanyName} as string,\n\t\t{PreviousName_9.CONDATE} as string,\n\t\t{PreviousName_9.CompanyName} as string,\n\t\t{PreviousName_10.CONDATE} as string,\n\t\t{PreviousName_10.CompanyName} as string,\n\t\tConfStmtNextDueDate as string,\n\t\tConfStmtLastMadeUpDate as string,\n\t\tFilename as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionBy('key',\n\t\t0,\n\t\t{RegAddress.County}\n\t)) ~> ReadCompanyData\nReadPPData, ReadCompanyData join(Postcode == {RegAddress.PostCode},\n\tjoinType:'inner',\n\tpartitionBy('key',\n\t\t0,\n\t\tPostcode\n\t),\n\tbroadcast: 'auto')~> Join1\nJoin1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/PPaid_parquet')]",
+				"[concat(variables('factoryId'), '/datasets/CompanyDataBlob')]",
+				"[concat(variables('factoryId'), '/datasets/CompanyandPropertyData')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ProcessData')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "JoinPricePaidWithCompanyData",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "PricePaid",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ReadPPData": {},
+									"ReadCompanyData": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/PricePaid')]"
+			]
+		}
+	]
+}

@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "ExploreS3"
+		},
+		"AmazonS31_secretAccessKey": {
+			"value": ""
+		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
+		"Logging_connectionString": {
+			"value": ""
+		},
+		"AmazonS31_properties_typeProperties_accessKeyId": {
+			"value": "AKIAWIHSUUK6SH6PMQMA"
+		},
+		"CompanyHouse_properties_typeProperties_url": {
+			"value": "@{linkedService().url}"
+		},
+		"LandRegistry_properties_typeProperties_url": {
+			"value": "@{linkedService().baseURL}"
+		},
+		"OrdinanceGeoData_properties_typeProperties_url": {
+			"value": "https://api.os.uk/downloads/v1/products/CodePointOpen/downloads?area=GB&format=CSV&redirect"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

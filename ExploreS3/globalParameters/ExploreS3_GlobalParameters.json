@@ -1,0 +1,26 @@
+{
+	"prefix": {
+		"type": "string",
+		"value": "pp_"
+	},
+	"baseLandRegistryURL": {
+		"type": "string",
+		"value": "http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/"
+	},
+	"CompanyData": {
+		"type": "string",
+		"value": "http://download.companieshouse.gov.uk/BasicCompanyDataAsOneFile-2020-09-01.zip"
+	},
+	"ExtractPricePaidData": {
+		"type": "bool",
+		"value": false
+	},
+	"ExtractCompanyData": {
+		"type": "bool",
+		"value": false
+	},
+	"ExtractGeoData": {
+		"type": "bool",
+		"value": true
+	}
+}
