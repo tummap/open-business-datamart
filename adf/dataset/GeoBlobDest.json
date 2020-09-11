@@ -18,11 +18,12 @@
 			},
 			"columnDelimiter": "\u0001",
 			"escapeChar": "\\",
-			"firstRowAsHeader": false,
+			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
 		"schema": [
 			{
+				"name": "\"AB101AB\",10,394235,806529,\"S92000003\",\"\",\"S08000020\",\"\",\"S12000033\",\"S13002842\"",
 				"type": "String"
 			}
 		]

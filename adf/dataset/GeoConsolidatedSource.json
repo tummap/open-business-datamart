@@ -1,0 +1,32 @@
+{
+	"name": "GeoConsolidatedSource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Source"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "processed",
+				"container": "geodata"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "Column_1",
+				"type": "UTF8"
+			},
+			{
+				"name": "sourcefilename",
+				"type": "UTF8"
+			}
+		]
+	}
+}

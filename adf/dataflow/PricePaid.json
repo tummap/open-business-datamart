@@ -6,37 +6,15 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "PPaid_parquet",
+						"referenceName": "GeoConsolidatedSource",
 						"type": "DatasetReference"
 					},
-					"name": "ReadPPData"
-				},
-				{
-					"dataset": {
-						"referenceName": "CompanyDataBlob",
-						"type": "DatasetReference"
-					},
-					"name": "ReadCompanyData"
-				},
-				{
 					"name": "GeoPostCodes"
 				}
 			],
-			"sinks": [
-				{
-					"dataset": {
-						"referenceName": "CompanyandPropertyData",
-						"type": "DatasetReference"
-					},
-					"name": "sink1"
-				}
-			],
-			"transformations": [
-				{
-					"name": "Join1"
-				}
-			],
-			"script": "source(output(\n\t\tTransactionUniqueIdentifier as string,\n\t\tPrice as string,\n\t\tDateofTransfer as string,\n\t\tPostcode as string,\n\t\tPropertyType as string,\n\t\tOldNew as string,\n\t\tDuration as string,\n\t\tPAON as string,\n\t\tSOAN as string,\n\t\tStreet as string,\n\t\tLocality as string,\n\t\tTownCity as string,\n\t\tDistrict as string,\n\t\tCounty as string,\n\t\tPPDCategoryType as string,\n\t\tRecordStatusMonthly as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet') ~> ReadPPData\nsource(output(\n\t\tCompanyName as string,\n\t\tCompanyNumber as string,\n\t\t{RegAddress.CareOf} as string,\n\t\t{RegAddress.POBox} as string,\n\t\t{RegAddress.AddressLine1} as string,\n\t\t{RegAddress.AddressLine2} as string,\n\t\t{RegAddress.PostTown} as string,\n\t\t{RegAddress.County} as string,\n\t\t{RegAddress.Country} as string,\n\t\t{RegAddress.PostCode} as string,\n\t\tCompanyCategory as string,\n\t\tCompanyStatus as string,\n\t\tCountryOfOrigin as string,\n\t\tDissolutionDate as string,\n\t\tIncorporationDate as string,\n\t\t{Accounts.AccountRefDay} as string,\n\t\t{Accounts.AccountRefMonth} as string,\n\t\t{Accounts.NextDueDate} as string,\n\t\t{Accounts.LastMadeUpDate} as string,\n\t\t{Accounts.AccountCategory} as string,\n\t\t{Returns.NextDueDate} as string,\n\t\t{Returns.LastMadeUpDate} as string,\n\t\t{Mortgages.NumMortCharges} as string,\n\t\t{Mortgages.NumMortOutstanding} as string,\n\t\t{Mortgages.NumMortPartSatisfied} as string,\n\t\t{Mortgages.NumMortSatisfied} as string,\n\t\t{SICCode.SicText_1} as string,\n\t\t{SICCode.SicText_2} as string,\n\t\t{SICCode.SicText_3} as string,\n\t\t{SICCode.SicText_4} as string,\n\t\t{LimitedPartnerships.NumGenPartners} as string,\n\t\t{LimitedPartnerships.NumLimPartners} as string,\n\t\tURI as string,\n\t\t{PreviousName_1.CONDATE} as string,\n\t\t{PreviousName_1.CompanyName} as string,\n\t\t{PreviousName_2.CONDATE} as string,\n\t\t{PreviousName_2.CompanyName} as string,\n\t\t{PreviousName_3.CONDATE} as string,\n\t\t{PreviousName_3.CompanyName} as string,\n\t\t{PreviousName_4.CONDATE} as string,\n\t\t{PreviousName_4.CompanyName} as string,\n\t\t{PreviousName_5.CONDATE} as string,\n\t\t{PreviousName_5.CompanyName} as string,\n\t\t{PreviousName_6.CONDATE} as string,\n\t\t{PreviousName_6.CompanyName} as string,\n\t\t{PreviousName_7.CONDATE} as string,\n\t\t{PreviousName_7.CompanyName} as string,\n\t\t{PreviousName_8.CONDATE} as string,\n\t\t{PreviousName_8.CompanyName} as string,\n\t\t{PreviousName_9.CONDATE} as string,\n\t\t{PreviousName_9.CompanyName} as string,\n\t\t{PreviousName_10.CONDATE} as string,\n\t\t{PreviousName_10.CompanyName} as string,\n\t\tConfStmtNextDueDate as string,\n\t\tConfStmtLastMadeUpDate as string,\n\t\tFilename as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionBy('key',\n\t\t0,\n\t\t{RegAddress.County}\n\t)) ~> ReadCompanyData\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> GeoPostCodes\nReadPPData, ReadCompanyData join(Postcode == {RegAddress.PostCode},\n\tjoinType:'inner',\n\tpartitionBy('key',\n\t\t0,\n\t\tPostcode\n\t),\n\tbroadcast: 'auto')~> Join1\nJoin1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+			"sinks": [],
+			"transformations": [],
+			"script": "source(output(\n\t\tColumn_1 as string,\n\t\tsourcefilename as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\twildcardPaths:['processed/']) ~> GeoPostCodes"
 		}
 	}
 }
