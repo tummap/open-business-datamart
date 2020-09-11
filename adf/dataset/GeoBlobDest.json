@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "output",
+				"folderPath": "output/Data/CSV/",
 				"container": "geodata"
 			},
 			"columnDelimiter": "\u0001",
