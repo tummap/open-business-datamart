@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "JoinPricePaidWithCompanyData",
+				"name": "Post code Aggregation",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
