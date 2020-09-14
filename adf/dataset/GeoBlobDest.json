@@ -16,16 +16,11 @@
 				"folderPath": "output/Data/CSV/",
 				"container": "geodata"
 			},
-			"columnDelimiter": "\u0001",
+			"columnDelimiter": ",",
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": [
-			{
-				"name": "\"AB101AB\",10,394235,806529,\"S92000003\",\"\",\"S08000020\",\"\",\"S12000033\",\"S13002842\"",
-				"type": "String"
-			}
-		]
+		"schema": []
 	}
 }
