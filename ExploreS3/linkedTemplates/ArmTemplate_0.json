@@ -702,15 +702,142 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"folderPath": "output",
+						"folderPath": "output/Data/CSV/",
 						"container": "geodata"
 					},
-					"columnDelimiter": "\u0001",
+					"columnDelimiter": ",",
 					"escapeChar": "\\",
 					"firstRowAsHeader": false,
 					"quoteChar": "\""
 				},
-				"schema": []
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GeoColumnNames')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Code-Point_Open_Column_Headers.csv",
+						"folderPath": "output/Doc",
+						"container": "geodata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GeoConsolidatedSource')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Source"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "processed",
+						"container": "geodata"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "Column_1",
+						"type": "UTF8"
+					},
+					{
+						"name": "sourcefilename",
+						"type": "UTF8"
+					}
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
@@ -745,6 +872,34 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/OrdinanceGeoData')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GeoFull')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Dest"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "processed",
+						"container": "geodata"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
 			]
 		},
 		{
@@ -909,7 +1064,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/GeoFull')]",
+			"name": "[concat(parameters('factoryName'), '/finaloutput')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -918,13 +1073,15 @@
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "Parquet",
+				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"container": "geodata"
+						"container": "companyhousedata"
 					},
-					"compressionCodec": "snappy"
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
 				},
 				"schema": []
 			},
@@ -1915,8 +2072,7 @@
 										"sink": {
 											"type": "DelimitedTextSink",
 											"storeSettings": {
-												"type": "AzureBlobStorageWriteSettings",
-												"copyBehavior": "PreserveHierarchy"
+												"type": "AzureBlobStorageWriteSettings"
 											},
 											"formatSettings": {
 												"type": "DelimitedTextWriteSettings",
@@ -1963,129 +2119,6 @@
 				"[concat(variables('factoryId'), '/datasets/GeoDataSource')]",
 				"[concat(variables('factoryId'), '/datasets/GeoBlobDest')]",
 				"[concat(variables('factoryId'), '/linkedServices/Logging')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PricePaid')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "PPaid_parquet",
-								"type": "DatasetReference"
-							},
-							"name": "ReadPPData"
-						},
-						{
-							"dataset": {
-								"referenceName": "CompanyDataBlob",
-								"type": "DatasetReference"
-							},
-							"name": "ReadCompanyData"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "CompanyandPropertyData",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "Join1"
-						}
-					],
-					"script": "source(output(\n\t\tTransactionUniqueIdentifier as string,\n\t\tPrice as string,\n\t\tDateofTransfer as string,\n\t\tPostcode as string,\n\t\tPropertyType as string,\n\t\tOldNew as string,\n\t\tDuration as string,\n\t\tPAON as string,\n\t\tSOAN as string,\n\t\tStreet as string,\n\t\tLocality as string,\n\t\tTownCity as string,\n\t\tDistrict as string,\n\t\tCounty as string,\n\t\tPPDCategoryType as string,\n\t\tRecordStatusMonthly as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet') ~> ReadPPData\nsource(output(\n\t\tCompanyName as string,\n\t\tCompanyNumber as string,\n\t\t{RegAddress.CareOf} as string,\n\t\t{RegAddress.POBox} as string,\n\t\t{RegAddress.AddressLine1} as string,\n\t\t{RegAddress.AddressLine2} as string,\n\t\t{RegAddress.PostTown} as string,\n\t\t{RegAddress.County} as string,\n\t\t{RegAddress.Country} as string,\n\t\t{RegAddress.PostCode} as string,\n\t\tCompanyCategory as string,\n\t\tCompanyStatus as string,\n\t\tCountryOfOrigin as string,\n\t\tDissolutionDate as string,\n\t\tIncorporationDate as string,\n\t\t{Accounts.AccountRefDay} as string,\n\t\t{Accounts.AccountRefMonth} as string,\n\t\t{Accounts.NextDueDate} as string,\n\t\t{Accounts.LastMadeUpDate} as string,\n\t\t{Accounts.AccountCategory} as string,\n\t\t{Returns.NextDueDate} as string,\n\t\t{Returns.LastMadeUpDate} as string,\n\t\t{Mortgages.NumMortCharges} as string,\n\t\t{Mortgages.NumMortOutstanding} as string,\n\t\t{Mortgages.NumMortPartSatisfied} as string,\n\t\t{Mortgages.NumMortSatisfied} as string,\n\t\t{SICCode.SicText_1} as string,\n\t\t{SICCode.SicText_2} as string,\n\t\t{SICCode.SicText_3} as string,\n\t\t{SICCode.SicText_4} as string,\n\t\t{LimitedPartnerships.NumGenPartners} as string,\n\t\t{LimitedPartnerships.NumLimPartners} as string,\n\t\tURI as string,\n\t\t{PreviousName_1.CONDATE} as string,\n\t\t{PreviousName_1.CompanyName} as string,\n\t\t{PreviousName_2.CONDATE} as string,\n\t\t{PreviousName_2.CompanyName} as string,\n\t\t{PreviousName_3.CONDATE} as string,\n\t\t{PreviousName_3.CompanyName} as string,\n\t\t{PreviousName_4.CONDATE} as string,\n\t\t{PreviousName_4.CompanyName} as string,\n\t\t{PreviousName_5.CONDATE} as string,\n\t\t{PreviousName_5.CompanyName} as string,\n\t\t{PreviousName_6.CONDATE} as string,\n\t\t{PreviousName_6.CompanyName} as string,\n\t\t{PreviousName_7.CONDATE} as string,\n\t\t{PreviousName_7.CompanyName} as string,\n\t\t{PreviousName_8.CONDATE} as string,\n\t\t{PreviousName_8.CompanyName} as string,\n\t\t{PreviousName_9.CONDATE} as string,\n\t\t{PreviousName_9.CompanyName} as string,\n\t\t{PreviousName_10.CONDATE} as string,\n\t\t{PreviousName_10.CompanyName} as string,\n\t\tConfStmtNextDueDate as string,\n\t\tConfStmtLastMadeUpDate as string,\n\t\tFilename as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionBy('key',\n\t\t0,\n\t\t{RegAddress.County}\n\t)) ~> ReadCompanyData\nReadPPData, ReadCompanyData join(Postcode == {RegAddress.PostCode},\n\tjoinType:'inner',\n\tpartitionBy('key',\n\t\t0,\n\t\tPostcode\n\t),\n\tbroadcast: 'auto')~> Join1\nJoin1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/PPaid_parquet')]",
-				"[concat(variables('factoryId'), '/datasets/CompanyDataBlob')]",
-				"[concat(variables('factoryId'), '/datasets/CompanyandPropertyData')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GeoFlow')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "GeoBlobDest",
-								"type": "DatasetReference"
-							},
-							"name": "GeoData"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "GeoFull",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [],
-					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'https://bigrpdiag.blob.core.windows.net/geodata/output/Doc/Code-Point_Open_Column_Headers.csv',\n\twildcardPaths:['output/Data/CSV/']) ~> GeoData\nGeoData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/GeoBlobDest')]",
-				"[concat(variables('factoryId'), '/datasets/GeoFull')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ProcessData')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "JoinPricePaidWithCompanyData",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "PricePaid",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"ReadPPData": {},
-									"ReadCompanyData": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/PricePaid')]"
 			]
 		}
 	]

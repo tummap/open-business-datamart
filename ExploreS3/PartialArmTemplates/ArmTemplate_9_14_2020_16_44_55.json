@@ -6,34 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "ExploreS3"
-		},
-		"AmazonS31_secretAccessKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'secretAccessKey' of 'AmazonS31'"
-		},
-		"AzureBlobStorage1_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
-		},
-		"Logging_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'Logging'"
-		},
-		"AmazonS31_properties_typeProperties_accessKeyId": {
-			"type": "string",
-			"defaultValue": "AKIAWIHSUUK6SH6PMQMA"
-		},
-		"CompanyHouse_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "@{linkedService().url}"
-		},
-		"LandRegistry_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "@{linkedService().baseURL}"
-		},
-		"OrdinanceGeoData_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://api.os.uk/downloads/v1/products/CodePointOpen/downloads?area=GB&format=CSV&redirect"
 		}
 	},
 	"variables": {
@@ -281,8 +253,7 @@
 									"outputs": [
 										{
 											"referenceName": "PPaid_parquet",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										}
 									]
 								}
@@ -967,15 +938,13 @@
 									"inputs": [
 										{
 											"referenceName": "CompanyData",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										}
 									],
 									"outputs": [
 										{
 											"referenceName": "CompanyDataBlob",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										}
 									]
 								}
@@ -1044,15 +1013,13 @@
 									"inputs": [
 										{
 											"referenceName": "GeoDataSource",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										}
 									],
 									"outputs": [
 										{
 											"referenceName": "GeoBlobDest",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										}
 									]
 								}
@@ -1063,13 +1030,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/PPaid')]",
-				"[concat(variables('factoryId'), '/datasets/PPaid_parquet')]",
-				"[concat(variables('factoryId'), '/datasets/CompanyData')]",
-				"[concat(variables('factoryId'), '/datasets/CompanyDataBlob')]",
-				"[concat(variables('factoryId'), '/datasets/GeoDataSource')]",
-				"[concat(variables('factoryId'), '/datasets/GeoBlobDest')]",
-				"[concat(variables('factoryId'), '/linkedServices/Logging')]"
+				"[concat(variables('factoryId'), '/datasets/GeoBlobDest')]"
 			]
 		},
 		{
@@ -1093,16 +1054,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "PricePaid",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"GeoPostCodes": {},
-									"Companies": {},
-									"PricePaidPropertyData": {},
-									"sink1": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -1114,584 +1067,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/PricePaid')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TransformGeo')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "dataflow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "GeoFlow",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"GeoData": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/GeoFlow')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CompanyData')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "CompanyHouse",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"url": "http://download.companieshouse.gov.uk/BasicCompanyDataAsOneFile-2020-09-01.zip"
-					}
-				},
-				"folder": {
-					"name": "Source"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "HttpServerLocation"
-					},
-					"columnDelimiter": ",",
-					"compressionCodec": "ZipDeflate",
-					"compressionLevel": "Optimal",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "CompanyName",
-						"type": "String"
-					},
-					{
-						"name": " CompanyNumber",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.CareOf",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.POBox",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.AddressLine1",
-						"type": "String"
-					},
-					{
-						"name": " RegAddress.AddressLine2",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.PostTown",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.County",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.Country",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.PostCode",
-						"type": "String"
-					},
-					{
-						"name": "CompanyCategory",
-						"type": "String"
-					},
-					{
-						"name": "CompanyStatus",
-						"type": "String"
-					},
-					{
-						"name": "CountryOfOrigin",
-						"type": "String"
-					},
-					{
-						"name": "DissolutionDate",
-						"type": "String"
-					},
-					{
-						"name": "IncorporationDate",
-						"type": "String"
-					},
-					{
-						"name": "Accounts.AccountRefDay",
-						"type": "String"
-					},
-					{
-						"name": "Accounts.AccountRefMonth",
-						"type": "String"
-					},
-					{
-						"name": "Accounts.NextDueDate",
-						"type": "String"
-					},
-					{
-						"name": "Accounts.LastMadeUpDate",
-						"type": "String"
-					},
-					{
-						"name": "Accounts.AccountCategory",
-						"type": "String"
-					},
-					{
-						"name": "Returns.NextDueDate",
-						"type": "String"
-					},
-					{
-						"name": "Returns.LastMadeUpDate",
-						"type": "String"
-					},
-					{
-						"name": "Mortgages.NumMortCharges",
-						"type": "String"
-					},
-					{
-						"name": "Mortgages.NumMortOutstanding",
-						"type": "String"
-					},
-					{
-						"name": "Mortgages.NumMortPartSatisfied",
-						"type": "String"
-					},
-					{
-						"name": "Mortgages.NumMortSatisfied",
-						"type": "String"
-					},
-					{
-						"name": "SICCode.SicText_1",
-						"type": "String"
-					},
-					{
-						"name": "SICCode.SicText_2",
-						"type": "String"
-					},
-					{
-						"name": "SICCode.SicText_3",
-						"type": "String"
-					},
-					{
-						"name": "SICCode.SicText_4",
-						"type": "String"
-					},
-					{
-						"name": "LimitedPartnerships.NumGenPartners",
-						"type": "String"
-					},
-					{
-						"name": "LimitedPartnerships.NumLimPartners",
-						"type": "String"
-					},
-					{
-						"name": "URI",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_1.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": " PreviousName_1.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": " PreviousName_2.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": " PreviousName_2.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_3.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": " PreviousName_3.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_4.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": " PreviousName_4.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_5.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": " PreviousName_5.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_6.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": " PreviousName_6.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_7.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": " PreviousName_7.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_8.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": " PreviousName_8.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_9.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": " PreviousName_9.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_10.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": " PreviousName_10.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "ConfStmtNextDueDate",
-						"type": "String"
-					},
-					{
-						"name": " ConfStmtLastMadeUpDate",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/CompanyHouse')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CompanyDataBlob')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dest"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "BasicCompanyDataAsOneFile-2020-09-01.txt",
-						"folderPath": "d22b2449-3e38-454b-b4aa-4508c34c836e",
-						"container": "companyhousedata"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "CompanyNumber",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.CareOf",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.POBox",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.AddressLine1",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.AddressLine2",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.PostTown",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.County",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.Country",
-						"type": "String"
-					},
-					{
-						"name": "RegAddress.PostCode",
-						"type": "String"
-					},
-					{
-						"name": "CompanyCategory",
-						"type": "String"
-					},
-					{
-						"name": "CompanyStatus",
-						"type": "String"
-					},
-					{
-						"name": "CountryOfOrigin",
-						"type": "String"
-					},
-					{
-						"name": "DissolutionDate",
-						"type": "String"
-					},
-					{
-						"name": "IncorporationDate",
-						"type": "String"
-					},
-					{
-						"name": "Accounts.AccountRefDay",
-						"type": "String"
-					},
-					{
-						"name": "Accounts.AccountRefMonth",
-						"type": "String"
-					},
-					{
-						"name": "Accounts.NextDueDate",
-						"type": "String"
-					},
-					{
-						"name": "Accounts.LastMadeUpDate",
-						"type": "String"
-					},
-					{
-						"name": "Accounts.AccountCategory",
-						"type": "String"
-					},
-					{
-						"name": "Returns.NextDueDate",
-						"type": "String"
-					},
-					{
-						"name": "Returns.LastMadeUpDate",
-						"type": "String"
-					},
-					{
-						"name": "Mortgages.NumMortCharges",
-						"type": "String"
-					},
-					{
-						"name": "Mortgages.NumMortOutstanding",
-						"type": "String"
-					},
-					{
-						"name": "Mortgages.NumMortPartSatisfied",
-						"type": "String"
-					},
-					{
-						"name": "Mortgages.NumMortSatisfied",
-						"type": "String"
-					},
-					{
-						"name": "SICCode.SicText_1",
-						"type": "String"
-					},
-					{
-						"name": "SICCode.SicText_2",
-						"type": "String"
-					},
-					{
-						"name": "SICCode.SicText_3",
-						"type": "String"
-					},
-					{
-						"name": "SICCode.SicText_4",
-						"type": "String"
-					},
-					{
-						"name": "LimitedPartnerships.NumGenPartners",
-						"type": "String"
-					},
-					{
-						"name": "LimitedPartnerships.NumLimPartners",
-						"type": "String"
-					},
-					{
-						"name": "URI",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_1.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_1.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_2.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_2.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_3.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_3.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_4.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_4.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_5.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_5.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_6.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_6.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_7.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_7.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_8.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_8.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_9.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_9.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_10.CONDATE",
-						"type": "String"
-					},
-					{
-						"name": "PreviousName_10.CompanyName",
-						"type": "String"
-					},
-					{
-						"name": "ConfStmtNextDueDate",
-						"type": "String"
-					},
-					{
-						"name": "ConfStmtLastMadeUpDate",
-						"type": "String"
-					},
-					{
-						"name": "Filename",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CompanyandPropertyData')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "output"
-					},
-					"compressionCodec": "none"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
 			]
 		},
 		{
@@ -1752,9 +1127,7 @@
 					}
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/GeoColumnNames')]",
@@ -1811,9 +1184,7 @@
 					}
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/GeoConsolidatedSource')]",
@@ -1848,40 +1219,7 @@
 					}
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GeoDataSource')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "OrdinanceGeoData",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Source"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "HttpServerLocation"
-					},
-					"columnDelimiter": "\u0001",
-					"compressionCodec": "ZipDeflate",
-					"compressionLevel": "Fastest",
-					"escapeChar": "\\",
-					"firstRowAsHeader": false,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/OrdinanceGeoData')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/GeoFull')]",
@@ -1906,271 +1244,6 @@
 					"compressionCodec": "snappy"
 				},
 				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GeoZipFile')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dest"
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": "data",
-						"container": "geodata"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PPaid')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LandRegistry",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"baseURL": {
-							"value": "@dataset().dataseturl",
-							"type": "Expression"
-						}
-					}
-				},
-				"parameters": {
-					"dataseturl": {
-						"type": "string",
-						"defaultValue": "http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/"
-					}
-				},
-				"folder": {
-					"name": "Source"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "HttpServerLocation",
-						"relativeUrl": "pp-2020.csv"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": false,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LandRegistry')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PPaid_parquet')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Dest"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": "Input",
-						"container": "pricepaiddata"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": [
-					{
-						"name": "TransactionUniqueIdentifier",
-						"type": "UTF8"
-					},
-					{
-						"name": "Price",
-						"type": "UTF8"
-					},
-					{
-						"name": "DateofTransfer",
-						"type": "UTF8"
-					},
-					{
-						"name": "Postcode",
-						"type": "UTF8"
-					},
-					{
-						"name": "PropertyType",
-						"type": "UTF8"
-					},
-					{
-						"name": "OldNew",
-						"type": "UTF8"
-					},
-					{
-						"name": "Duration",
-						"type": "UTF8"
-					},
-					{
-						"name": "PAON",
-						"type": "UTF8"
-					},
-					{
-						"name": "SOAN",
-						"type": "UTF8"
-					},
-					{
-						"name": "Street",
-						"type": "UTF8"
-					},
-					{
-						"name": "Locality",
-						"type": "UTF8"
-					},
-					{
-						"name": "TownCity",
-						"type": "UTF8"
-					},
-					{
-						"name": "District",
-						"type": "UTF8"
-					},
-					{
-						"name": "County",
-						"type": "UTF8"
-					},
-					{
-						"name": "PPDCategoryType",
-						"type": "UTF8"
-					},
-					{
-						"name": "RecordStatusMonthly",
-						"type": "UTF8"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AmazonS31')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AmazonS3",
-				"typeProperties": {
-					"serviceUrl": "https://s3-pt-opendb-archive.s3.eu-west-2.amazonaws.com",
-					"accessKeyId": "[parameters('AmazonS31_properties_typeProperties_accessKeyId')]",
-					"secretAccessKey": {
-						"type": "SecureString",
-						"value": "[parameters('AmazonS31_secretAccessKey')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CompanyHouse')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"parameters": {
-					"url": {
-						"type": "string",
-						"defaultValue": "http://download.companieshouse.gov.uk/BasicCompanyDataAsOneFile-2020-09-01.zip"
-					}
-				},
-				"annotations": [],
-				"type": "HttpServer",
-				"typeProperties": {
-					"url": "[parameters('CompanyHouse_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LandRegistry')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2020.csv",
-				"parameters": {
-					"baseURL": {
-						"type": "String",
-						"defaultValue": "http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/"
-					}
-				},
-				"annotations": [],
-				"type": "HttpServer",
-				"typeProperties": {
-					"url": "[parameters('LandRegistry_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Logging')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('Logging_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/OrdinanceGeoData')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "HttpServer",
-				"typeProperties": {
-					"url": "[parameters('OrdinanceGeoData_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
 			},
 			"dependsOn": []
 		},
@@ -2266,17 +1339,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/GeoBlobDest')]",
-				"[concat(variables('factoryId'), '/datasets/CompanyDataBlob')]",
-				"[concat(variables('factoryId'), '/datasets/PPaid_parquet')]",
 				"[concat(variables('factoryId'), '/datasets/finaloutput')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/default')]",
-			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
-			"apiVersion": "2018-06-01",
-			"properties": {},
-			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/finaloutput')]",
@@ -2300,9 +1364,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
+			"dependsOn": []
 		}
 	]
 }
