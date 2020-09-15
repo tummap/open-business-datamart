@@ -26,7 +26,6 @@
 				}
 			}
 		],
-		"concurrency": 4,
 		"annotations": []
 	}
 }
