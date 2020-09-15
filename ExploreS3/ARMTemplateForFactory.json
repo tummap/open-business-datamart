@@ -1110,7 +1110,6 @@
 						}
 					}
 				],
-				"concurrency": 4,
 				"annotations": []
 			},
 			"dependsOn": [
