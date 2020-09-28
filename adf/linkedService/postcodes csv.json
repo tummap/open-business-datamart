@@ -1,0 +1,12 @@
+{
+	"name": "postcodes csv",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://www.doogal.co.uk/files/postcodes.zip",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
