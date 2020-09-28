@@ -1,0 +1,26 @@
+{
+	"name": "PostCodesSource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "postcodes csv",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Source"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation"
+			},
+			"columnDelimiter": "\u0001",
+			"compressionCodec": "ZipDeflate",
+			"compressionLevel": "Fastest",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
